@@ -1,8 +1,15 @@
+import app from "./app";
 import { Config } from "./config";
 
-const welcome = (name: string) => {
-  console.log("Welcome ",name,Config.PORT);
+
+const startServer = () => {
+  const PORT = Config.PORT;
+  try {
+    app.listen(PORT, () => console.log(`App is Listening on ${PORT}`))
+  } catch (error) {
+    console.error(error);
+    process.exit(1);
+  }
 }
 
-
-welcome('Krish');
+startServer();
