@@ -11,8 +11,12 @@ export class AuthController {
     
     const {firstName,lastName,email,password} = req.body;
 
-    await this.userService.create({firstName, lastName, email, password});
+    const RegUser = await this.userService.create({firstName, lastName, email, password});
 
-    res.status(201).json();
+    res.status(201).json({
+      status: true,
+      message: "user Register!!!",
+      UserId: RegUser.id
+    });
   }
 }
