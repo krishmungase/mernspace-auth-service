@@ -1,7 +1,35 @@
 import request from "supertest"
-import app from "../../src/app"
+import app from "../../src/app";
+import { User } from "../../src/entity/User";
+import { DataSource } from "typeorm";
+import { AppDataSource } from "../../src/config/data-source";
+import { cruncateTable } from "../utils";
 
 describe("POST /auth/register", () => {
+
+  let connection : DataSource;
+
+  beforeAll(async() => {
+    try {
+      connection = await AppDataSource.initialize();
+    } catch (error) {
+      console.log(error)
+    }
+  })
+
+  beforeEach(async() => {
+    if(connection){
+      await cruncateTable(connection);
+    }
+  })
+
+  afterAll(async() => {
+    if (connection) {
+      await connection.destroy();
+    }
+  })
+
+
   describe("Given all fields",() => {
     it("should return the 201 status code", async () => {
       // AAA
@@ -14,7 +42,7 @@ describe("POST /auth/register", () => {
         password:"secret"
       }
       // Act
-      const response = await request(app).post('/auth/register').send(userData)
+      const response = await request(app as any).post('/auth/register').send(userData)
       // Assert
 
       expect(response.statusCode).toBe(201)
@@ -31,31 +59,30 @@ describe("POST /auth/register", () => {
         password:"secret"
       }
       // Act
-      const response = await request(app).post('/auth/register').send(userData)
+      const response = await request(app as any).post('/auth/register').send(userData)
       // Assert
 
       expect((response.headers as Record<string,string>)['content-type']).toEqual(expect.stringContaining("json"))
     });
 
-    it("should persist the user in the database", async () => {
-       // AAA
-
-      // Arrange
-      const  userData = {
+    it("should persist the user in the database",async() =>{
+      const userData = {
         firstName: "Krish",
-        lastName: "M",
-        email: "krishmungase@gmail.com",
-        password:"secret"
+        lastName: "Mungase",
+        email: "mungasekrishna8@gmail.com",
+        password: "secret",
       }
 
-      // Act
-      await request(app).post('/auth/register').send(userData)
+      await request(app as any).post("/auth/register").send(userData);
 
-      // Assert
-
-
+      const userRepository = connection.getRepository(User);
+      const users = await userRepository.find();
+      expect(users).toHaveLength(1);
+      expect(users[0].firstName).toBe(userData.firstName)
+      expect(users[0].lastName).toBe(userData.lastName)
+      expect(users[0].email).toBe(userData.email)
+      expect(users[0].password).toBe(userData.password)
     })
-
 
     
   })
