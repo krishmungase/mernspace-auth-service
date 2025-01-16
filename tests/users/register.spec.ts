@@ -96,6 +96,7 @@ describe("POST /auth/register", () => {
       // Assert
       const responseBody = JSON.parse(response.text);
       expect(responseBody.UserId).toBeDefined();
+      expect(typeof responseBody.UserId).toBe("number");
     })
     
   })
