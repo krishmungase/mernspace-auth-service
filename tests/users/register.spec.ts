@@ -3,7 +3,7 @@ import app from "../../src/app";
 import { User } from "../../src/entity/User";
 import { DataSource } from "typeorm";
 import { AppDataSource } from "../../src/config/data-source";
-import { cruncateTable } from "../utils";
+import { Roles } from "../../src/constants";
 
 describe("POST /auth/register", () => {
 
@@ -18,9 +18,8 @@ describe("POST /auth/register", () => {
   })
 
   beforeEach(async() => {
-    if(connection){
-      await cruncateTable(connection);
-    }
+    await connection.dropDatabase();
+    await connection.synchronize();
   })
 
   afterAll(async() => {
@@ -83,6 +82,7 @@ describe("POST /auth/register", () => {
       expect(users[0].email).toBe(userData.email)
       expect(users[0].password).toBe(userData.password)
     })
+
     it("should return an id of the created user",async() => {
       // Arrange
       const  userData = {
@@ -97,6 +97,23 @@ describe("POST /auth/register", () => {
       const responseBody = JSON.parse(response.text);
       expect(responseBody.id).toBeDefined();
       expect(typeof responseBody.id).toBe("number");
+    })
+
+    it("should assign a customer role", async() => {
+         // Arrange
+         const  userData = {
+          firstName: "Krish",
+          lastName: "M",
+          email: "krishmungase@gmail.com",
+          password:"secret"
+        }
+        // Act
+        await request(app as any).post('/auth/register').send(userData);
+
+        const userRepository = connection.getRepository(User);
+        const users = await userRepository.find();
+        expect(users[0]).toHaveProperty("role");
+        expect(users[0].role).toBe(Roles.CUSTOMER);
     })
     
   })
