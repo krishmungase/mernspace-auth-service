@@ -245,6 +245,26 @@ describe("POST /auth/register", () => {
       expect(response.statusCode).toBe(400);
       expect(users).toHaveLength(0);
     });
+
+    it("should return 400 status code if password has less than 8 char", async () => {
+      // Arrange
+      const userData = {
+        firstName: "Krishna",
+        lastName: "M",
+        email: "krishmungase@gmail.com",
+        password: "sect",
+      };
+      // Act
+      const response = await request(app as any)
+        .post("/auth/register")
+        .send(userData);
+      // Assert
+      const userRepository = connection.getRepository(User);
+      const users = await userRepository.find();
+
+      expect(response.statusCode).toBe(400);
+      expect(users).toHaveLength(0);
+    });
   });
 
   describe("Flelds are not in proper format", () => {
