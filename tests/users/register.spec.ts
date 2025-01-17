@@ -191,7 +191,7 @@ describe("POST /auth/register", () => {
       const userData = {
         firstName: "",
         lastName: "M",
-        email: "krishmungase",
+        email: "krishmungase@gmail.com",
         password: "secret",
       };
       // Act
@@ -211,8 +211,28 @@ describe("POST /auth/register", () => {
       const userData = {
         firstName: "Krishna",
         lastName: "",
-        email: "krishmungase",
+        email: "krishmungase@gmail.com",
         password: "secret",
+      };
+      // Act
+      const response = await request(app as any)
+        .post("/auth/register")
+        .send(userData);
+      // Assert
+      const userRepository = connection.getRepository(User);
+      const users = await userRepository.find();
+
+      expect(response.statusCode).toBe(400);
+      expect(users).toHaveLength(0);
+    });
+
+    it("should return 400 status code if password is missing", async () => {
+      // Arrange
+      const userData = {
+        firstName: "Krishna",
+        lastName: "M",
+        email: "krishmungase@gmail.com",
+        password: "",
       };
       // Act
       const response = await request(app as any)
