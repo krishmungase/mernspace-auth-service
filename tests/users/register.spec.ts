@@ -95,8 +95,8 @@ describe("POST /auth/register", () => {
       const response = await request(app as any).post('/auth/register').send(userData)
       // Assert
       const responseBody = JSON.parse(response.text);
-      expect(responseBody.UserId).toBeDefined();
-      expect(typeof responseBody.UserId).toBe("number");
+      expect(responseBody.id).toBeDefined();
+      expect(typeof responseBody.id).toBe("number");
     })
     
   })
