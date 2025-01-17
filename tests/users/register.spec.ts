@@ -80,7 +80,6 @@ describe("POST /auth/register", () => {
       expect(users[0].firstName).toBe(userData.firstName)
       expect(users[0].lastName).toBe(userData.lastName)
       expect(users[0].email).toBe(userData.email)
-      expect(users[0].password).toBe(userData.password)
     })
 
     it("should return an id of the created user",async() => {
@@ -114,6 +113,24 @@ describe("POST /auth/register", () => {
         const users = await userRepository.find();
         expect(users[0]).toHaveProperty("role");
         expect(users[0].role).toBe(Roles.CUSTOMER);
+    })
+
+    it("should store the hash password", async() => {
+      const  userData = {
+        firstName: "Krish",
+        lastName: "M",
+        email: "krishmungase@gmail.com",
+        password:"secret"
+      }
+      // Act
+      await request(app as any).post('/auth/register').send(userData);
+
+      const userRepository = connection.getRepository(User);
+      const users = await userRepository.find();
+
+      expect(users[0].password).not.toBe(userData.password);
+      expect(users[0].password).toHaveLength(60)
+
     })
     
   })

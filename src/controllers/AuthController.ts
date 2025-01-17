@@ -3,7 +3,6 @@ import { RegisterUserRequest } from "../types";
 import { UserService } from "../services/UserService";
 import { Logger } from "winston";
 
-
 export class AuthController {
   
   constructor(private userService: UserService, private logger:Logger){}
