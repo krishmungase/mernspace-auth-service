@@ -186,6 +186,26 @@ describe("POST /auth/register", () => {
       expect(users).toHaveLength(0);
     });
 
+    it("should return the 400 status code if email is not valid", async () => {
+      // Arrange
+      const userData = {
+        firstName: "Krish",
+        lastName: "M",
+        email: "krishmungase.gmail.com",
+        password: "secret",
+      };
+      // Act
+      const response = await request(app as any)
+        .post("/auth/register")
+        .send(userData);
+      // Assert
+      const userRepository = connection.getRepository(User);
+      const users = await userRepository.find();
+
+      expect(response.statusCode).toBe(400);
+      expect(users).toHaveLength(0);
+    });
+
     it("should return 400 status code if firstName is missing", async () => {
       // Arrange
       const userData = {
