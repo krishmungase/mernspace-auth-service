@@ -5,6 +5,7 @@ import { DataSource } from "typeorm";
 import { AppDataSource } from "../../src/config/data-source";
 import { Roles } from "../../src/constants";
 import { isJWT } from "../utils";
+import { RefreshToken } from "../../src/entity/RefreshToken";
 
 describe("POST /auth/register", () => {
   let connection: DataSource;
@@ -182,30 +183,56 @@ describe("POST /auth/register", () => {
       let accessToken: string | null = null;
       let refreshToken: string | null = null;
 
-      interface Headers{
-        ['set-cookie']: string[]
+      interface Headers {
+        ["set-cookie"]: string[];
       }
 
-      const cookies = (response.headers as unknown as Headers)['set-cookie'] || []
+      const cookies =
+        (response.headers as unknown as Headers)["set-cookie"] || [];
 
       cookies.forEach((cookie) => {
-        if(cookie.startsWith('accessToken=')){
-          accessToken = cookie.split(';')[0].split('=')[1]
+        if (cookie.startsWith("accessToken=")) {
+          accessToken = cookie.split(";")[0].split("=")[1];
         }
 
-        if(cookie.startsWith('refreshToken=')){
-          refreshToken = cookie.split(';')[0].split('=')[1]
+        if (cookie.startsWith("refreshToken=")) {
+          refreshToken = cookie.split(";")[0].split("=")[1];
         }
-      })
-      
-      expect(accessToken).not.toBeNull()
-      expect(refreshToken).not.toBeNull()
+      });
+
+      expect(accessToken).not.toBeNull();
+      expect(refreshToken).not.toBeNull();
 
       expect(isJWT(accessToken)).toBeTruthy();
       expect(isJWT(refreshToken)).toBeTruthy();
-      
     });
 
+    it("should store refresh token in database", async () => {
+      const userData = {
+        firstName: "Krish",
+        lastName: "M",
+        email: "krishmungase@gmail.com",
+        password: "secret",
+      };
+
+      // Act
+      const response = await request(app as any)
+        .post("/auth/register")
+        .send(userData);
+
+      // Assert
+      const refreshTokenRepo = connection.getRepository(RefreshToken);
+      // const refreshTokens = await refreshTokenRepo.find();
+
+      const token = await refreshTokenRepo
+        .createQueryBuilder("refreshToken")
+        .where("refreshToken.userId = :userId", {
+          userId: (response.body as Record<string, string>).id,
+        })
+        .getMany();
+
+      expect(token).toHaveLength(1);
+    });
   });
 
   describe("Fields are missing ", () => {
@@ -339,18 +366,16 @@ describe("POST /auth/register", () => {
         password: "secret",
       };
 
-  
       // // Act
       await request(app as any)
         .post("/auth/register")
         .send(userData);
 
-      
       // Assert
       const userRepository = connection.getRepository(User);
       const users = await userRepository.find();
       const user = users[0];
       expect(user.email).toBe("krishmungase@gmail.com");
     });
-  })
+  });
 });
