@@ -5,4 +5,4 @@ export default [
   body("firstName").notEmpty(),
   body("lastName").notEmpty(),
   body("password").notEmpty().isLength({ min: 6 }),
-]
+];

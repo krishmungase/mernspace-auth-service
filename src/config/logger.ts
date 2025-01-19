@@ -1,42 +1,41 @@
-import winston from 'winston'
-import { Config } from '.'
+import winston from "winston";
+import { Config } from ".";
 
 const logger = winston.createLogger({
-  level:'info',
+  level: "info",
   defaultMeta: {
-    serviceName: "auth-service"
+    serviceName: "auth-service",
   },
-  transports:[
+  transports: [
     new winston.transports.File({
       level: "info",
-      dirname: 'logs',
-      filename: 'combined.log',
+      dirname: "logs",
+      filename: "combined.log",
       format: winston.format.combine(
         winston.format.timestamp(),
-        winston.format.json(),
+        winston.format.json()
       ),
-      silent: Config.NODE_ENV == 'test',
+      silent: Config.NODE_ENV == "test",
     }),
     new winston.transports.File({
       level: "error",
-      dirname: 'logs',
-      filename: 'error.log',
+      dirname: "logs",
+      filename: "error.log",
       format: winston.format.combine(
         winston.format.timestamp(),
-        winston.format.json(),
+        winston.format.json()
       ),
-      silent: Config.NODE_ENV == 'test',
+      silent: Config.NODE_ENV == "test",
     }),
     new winston.transports.Console({
       level: "info",
       format: winston.format.combine(
         winston.format.timestamp(),
-        winston.format.json(),
+        winston.format.json()
       ),
-      silent: Config.NODE_ENV == 'test',
-    })
-  ]
-})
+      silent: Config.NODE_ENV == "test",
+    }),
+  ],
+});
 
-
-export default logger
+export default logger;
