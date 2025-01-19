@@ -5,8 +5,6 @@ import { Logger } from "winston";
 import { validationResult } from "express-validator";
 import createHttpError from "http-errors";
 import { JwtPayload, sign } from "jsonwebtoken";
-import path from "path";
-import { Config } from "../config";
 import { AppDataSource } from "../config/data-source";
 import { RefreshToken } from "../entity/RefreshToken";
 import { TokenService } from "../services/TokenService";
