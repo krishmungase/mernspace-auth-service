@@ -3,7 +3,7 @@
    "version": "1.0.0",
    "main": "index.js",
    "scripts": {
-      "dev": "cross-env NODE_ENV=dev src/server.ts",
+      "dev": "cross-env NODE_ENV=dev nodemon src/server.ts",
       "test": "jest --watch --runInBand",
       "start": "ts-node src/index.ts",
       "typeorm": "typeorm-ts-node-commonjs"
