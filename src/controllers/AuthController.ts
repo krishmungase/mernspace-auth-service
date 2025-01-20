@@ -74,7 +74,7 @@ export class AuthController {
 
       this.logger.info("user is logged in successfully", { id: user.id });
 
-      res.json({
+      res.status(201).json({
         id: user.id,
       });
     } catch (err) {
@@ -153,7 +153,7 @@ export class AuthController {
         httpOnly: true,
       });
 
-      res.status(201).json({
+      res.json({
         id: user.id,
       });
     } catch (err) {
