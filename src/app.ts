@@ -6,6 +6,7 @@ import authRouter from "./routes/auth";
 import cookieParser from "cookie-parser";
 
 const app = express();
+app.use(express.static("public"));
 app.use(cookieParser());
 app.use(express.json());
 

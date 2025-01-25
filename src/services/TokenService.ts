@@ -16,9 +16,10 @@ export class TokenService {
       privateKey = fs.readFileSync(
         path.join(__dirname, "../../certs/private.pem")
       );
-    } catch (err) {
+
+     } catch (err) {
       const error = createHttpError(500, "Error while reading privateKey");
-      throw err;
+      throw error;
     }
 
     const accessToken = sign(payload, privateKey, {
