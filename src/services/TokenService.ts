@@ -11,16 +11,7 @@ export class TokenService {
   constructor(private refreshTokenRepository: Repository<RefreshToken>) {}
 
   generateAccessToken(payload: JwtPayload) {
-    let privateKey: Buffer;
-    try {
-      privateKey = fs.readFileSync(
-        path.join(__dirname, "../../certs/private.pem")
-      );
-
-     } catch (err) {
-      const error = createHttpError(500, "Error while reading privateKey");
-      throw error;
-    }
+    let privateKey = Config.PRIVATE_KEY as string;
 
     const accessToken = sign(payload, privateKey, {
       algorithm: "RS256",
