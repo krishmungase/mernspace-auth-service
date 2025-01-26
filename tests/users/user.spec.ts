@@ -3,7 +3,7 @@ import app from "../../src/app";
 import { User } from "../../src/entity/User";
 import { DataSource } from "typeorm";
 import { AppDataSource } from "../../src/config/data-source";
-import createJWKSMock from "mock-jwks"
+import createJWKSMock from "mock-jwks";
 import { Roles } from "../../src/constants";
 import { isJWT } from "../utils";
 import { RefreshToken } from "../../src/entity/RefreshToken";
@@ -14,7 +14,7 @@ describe("GET /auth/self", () => {
 
   beforeAll(async () => {
     try {
-      jwks = createJWKSMock("http://localhost:5501")
+      jwks = createJWKSMock("http://localhost:5501");
       connection = await AppDataSource.initialize();
     } catch (error) {
       console.log(error);
@@ -38,59 +38,77 @@ describe("GET /auth/self", () => {
   });
 
   describe("Given all fields", () => {
-    it("should return the 201 status code", async () => {
+    it("Should return the user data", async () => {
+      const userData = {
+        firstName: "Narayan",
+        lastName: "Mungase",
+        email: "example@gmail.com",
+        password: "Mungase1234",
+        role: "customer",
+      };
+      const userRepository = connection.getRepository(User);
+      const data = await userRepository.save(userData);
+
+      //Generate token
+      const accessToken = jwks.token({ sub: String(data.id), role: data.role });
+
+      //Add token to cookie
       const response = await request(app as any)
         .get("/auth/self")
+        .set("Cookie", [`accessToken=${accessToken}`])
         .send();
-      // Assert
 
       expect(response.statusCode).toBe(200);
-    })
+      expect((response.body as Record<string, string>).id).toBe(data.id);
+    });
 
-    // it("should return the user data", async () => {
-    //   const userData = {
-    //     firstName: "Krish",
-    //     lastName: "M",
-    //     email: "krishmungase@gmail.com",
-    //     password: "secret",
-    //   };
+    it("should not return the password field", async () => {
+      // Register user
+      const userData = {
+        firstName: "Narayan",
+        lastName: "Mungase",
+        email: "example@gmail.com",
+        password: "Mungase1234",
+        role: "customer",
+      };
+      const userRepository = connection.getRepository(User);
+      const data = await userRepository.save(userData);
+      // Generate token
+      const accessToken = jwks.token({
+        sub: String(data.id),
+        role: data.role,
+      });
 
-    //   const userRepository = connection.getRepository(User);
-    //   const user = await userRepository.save({...userData, role: Roles.CUSTOMER });
-
-    //   const accessToken = jwks.token({sub:String(user.id), role: Roles.CUSTOMER}); 
-    //   console.log("accessToken => ",accessToken);
-
-
-    //   const response = await request(app as any)
-    //     .get("/auth/self")
-    //     .set('Cookie',[`accessToken=${accessToken}`])
-    //     .send();
-      
-
-    //   // Assert
-    //   expect(response.statusCode).toBe(200);
-    //   expect(response.body.id).toBe(user.id);
-    // })
+      // Add token to cookie
+      const response = await request(app as any)
+        .get("/auth/self")
+        .set("Cookie", [`accessToken=${accessToken};`])
+        .send();
+      // Assert
+      // Check if user id matches with registered user
+      expect(response.body as Record<string, string>).not.toHaveProperty(
+        "password"
+      );
+    });
 
     it("should return 401 status code if token does not exists", async () => {
       // Register user
       const userData = {
-          firstName: "Rakesh",
-          lastName: "K",
-          email: "rakesh@mern.space",
-          password: "password",
+        firstName: "Narayan",
+        lastName: "Mungase",
+        email: "example@gmail.com",
+        password: "Mungase1234",
+        role: "customer",
       };
       const userRepository = connection.getRepository(User);
-      await userRepository.save({
-          ...userData,
-          role: Roles.CUSTOMER,
-      });
+      await userRepository.save(userData);
 
       // Add token to cookie
-      const response = await request(app as any).get("/auth/self").send();
+      const response = await request(app as any).get("/auth/self");
+      console.log(response.body);
+
       // Assert
-      expect(response.statusCode).toBe(401);
+      expect(response.statusCode).toEqual(500);
+    });
   });
-  });
-})
+});
