@@ -11,12 +11,27 @@ export class TokenService {
   constructor(private refreshTokenRepository: Repository<RefreshToken>) {}
 
   generateAccessToken(payload: JwtPayload) {
-    let privateKey = Config.PRIVATE_KEY as string;
+    let privateKey: string;
+
+    if (!Config.PRIVATE_KEY) {
+      const error = createHttpError(
+        500,
+        "Private key is not set in environment variables",
+      );
+      throw error;
+    }
+
+    try {
+      privateKey = Config.PRIVATE_KEY;
+    } catch (err) {
+      const error = createHttpError(500, "Error while reading private key");
+      throw error;
+    }
 
     const accessToken = sign(payload, privateKey, {
       algorithm: "RS256",
       expiresIn: "1h",
-      issuer: "auth-service",
+      issuer: "auth_service",
     });
 
     return accessToken;

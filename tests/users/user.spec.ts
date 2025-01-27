@@ -4,9 +4,6 @@ import { User } from "../../src/entity/User";
 import { DataSource } from "typeorm";
 import { AppDataSource } from "../../src/config/data-source";
 import createJWKSMock from "mock-jwks";
-import { Roles } from "../../src/constants";
-import { isJWT } from "../utils";
-import { RefreshToken } from "../../src/entity/RefreshToken";
 
 describe("GET /auth/self", () => {
   let connection: DataSource;
@@ -40,7 +37,7 @@ describe("GET /auth/self", () => {
   describe("Given all fields", () => {
     it("Should return the user data", async () => {
       const userData = {
-        firstName: "Narayan",
+        firstName: "Krishna",
         lastName: "Mungase",
         email: "example@gmail.com",
         password: "Mungase1234",
@@ -71,6 +68,7 @@ describe("GET /auth/self", () => {
         password: "Mungase1234",
         role: "customer",
       };
+
       const userRepository = connection.getRepository(User);
       const data = await userRepository.save(userData);
       // Generate token
@@ -105,10 +103,8 @@ describe("GET /auth/self", () => {
 
       // Add token to cookie
       const response = await request(app as any).get("/auth/self");
-      console.log(response.body);
-
       // Assert
-      expect(response.statusCode).toEqual(500);
+      expect(response.statusCode).toBe(401);
     });
   });
 });
