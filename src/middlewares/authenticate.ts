@@ -21,6 +21,7 @@ export default expressjwt({
       }
     }
     const { accessToken } = req.cookies;
+    console.log("Token=>",accessToken);
     if (!accessToken) return null;
     return accessToken;
   },

@@ -175,7 +175,7 @@ export class AuthController {
       };
 
       const accessToken = this.tokenService.generateAccessToken(payload);
-      
+
       const user = await this.userService.findById(Number(req.auth?.sub));
 
       if (!user) {
@@ -186,7 +186,7 @@ export class AuthController {
 
       const newRefreshToken = await this.tokenService.persistRefreshToken(user);
 
-      await this.tokenService.deleteRefreshToken(Number(req.auth.id))
+      await this.tokenService.deleteRefreshToken(Number(req.auth.id));
 
       const refreshToken = this.tokenService.generateRefreshToken({
         ...payload,
@@ -217,5 +217,23 @@ export class AuthController {
       return;
     }
   }
-  
+
+  async logout(req: AuthRequest, res: Response, next: NextFunction) {
+    console.log(req.auth);
+    try {
+      await this.tokenService.deleteRefreshToken(Number(req.auth.id));
+      this.logger.info("Refresh Token deleted Successfully", { id: req.auth.id });
+      this.logger.info("User logged out successfully", { id: req.auth.sub });
+
+      res.clearCookie('accessToken');
+      res.clearCookie('refreshToken');
+
+      console.log("User logged out successfully");
+
+      res.json({});
+    } catch (err) {
+      next(err);
+      return;
+    }
+  }
 }
