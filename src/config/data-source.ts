@@ -13,9 +13,9 @@ export const AppDataSource = new DataSource({
   database: Config.DB_NAME,
 
   // Don't use in the Production ⚠️ !!!
-  synchronize: true,
+  synchronize: false,
   logging: false,
   entities: [User, RefreshToken],
-  migrations: [],
+  migrations: ["src/migration/*.ts"],
   subscribers: [],
 });
