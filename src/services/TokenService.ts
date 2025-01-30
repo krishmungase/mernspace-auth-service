@@ -1,7 +1,5 @@
-import fs from "fs";
 import createHttpError from "http-errors";
 import { JwtPayload, sign } from "jsonwebtoken";
-import path from "path";
 import { Config } from "../config";
 import { RefreshToken } from "../entity/RefreshToken";
 import { User } from "../entity/User";
