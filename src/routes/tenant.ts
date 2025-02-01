@@ -31,11 +31,11 @@ router.post(
 // );
 router.get("/", (req, res, next) => tenantController.getAll(req, res, next));
 router.get("/:id", (req, res, next) => tenantController.getOne(req, res, next));
-// router.delete(
-//   "/:id",
-//   authenticate,
-//   canAccess([Roles.ADMIN]),
-//   (req, res, next) => tenantController.destroy(req, res, next),
-// );
+router.delete(
+  "/:id",
+  validateRefreshToken,
+  canAccess([Roles.ADMIN]),
+  (req, res, next) => tenantController.destroy(req, res, next),
+);
 
 export default router;
