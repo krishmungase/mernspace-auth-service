@@ -43,7 +43,7 @@ router.post(
 
 router.get(
   "/self",
-  authenticate,
+  validateRefreshToken,
   (req: Request, res: Response, next: NextFunction) =>
     authController.self(req as AuthRequest, res, next)
 )
@@ -57,7 +57,7 @@ router.post(
 
 router.post(
   "/logout",
-  authenticate,
+  validateRefreshToken,
   parseRefreshToken,
   (req: Request,res: Response, next: NextFunction) =>
     authController.logout(req as AuthRequest, res, next)
