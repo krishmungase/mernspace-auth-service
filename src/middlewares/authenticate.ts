@@ -22,6 +22,7 @@ export default expressjwt({
     }
     const { accessToken } = req.cookies;
     if (!accessToken) return null;
+
     return accessToken;
   },
 });
