@@ -49,11 +49,13 @@ describe("GET /auth/self", () => {
       //Generate token
       const accessToken = jwks.token({ sub: String(data.id), role: data.role });
 
+      console.log("AccessToken => ",accessToken)
       //Add token to cookie
       const response = await request(app as any)
         .get("/auth/self")
         .set("Cookie", [`accessToken=${accessToken}`])
         .send();
+
 
       expect(response.statusCode).toBe(200);
       expect((response.body as Record<string, string>).id).toBe(data.id);

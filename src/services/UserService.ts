@@ -8,7 +8,7 @@ import bcrypt from "bcrypt";
 export class UserService {
   constructor(private userRepository: Repository<User>) {}
 
-  async create({ firstName, lastName, email, password }: UserData) {
+  async create({ firstName, lastName, email, password,role }: UserData) {
     const user = await this.userRepository.findOne({ where: { email: email } });
 
     if (user) {
@@ -26,7 +26,7 @@ export class UserService {
         lastName,
         email,
         password: hashedPassword,
-        role: Roles.CUSTOMER,
+        role,
       });
     } catch (err) {
       const error = createHttpError(500, "Failed to store data in database");
