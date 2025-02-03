@@ -3,6 +3,7 @@ import { TenantService } from "../services/TenantService";
 import { CreateTenantRequest } from "../types";
 import { Logger } from "winston";
 import createHttpError from "http-errors";
+import { validationResult } from "express-validator";
 
 export class TenantController {
   constructor(private tenantService: TenantService, private logger: Logger) {}
@@ -50,7 +51,7 @@ export class TenantController {
     }
   }
 
-  async destroy(req: Request, res: Response, next: NextFunction){
+  async destroy(req: Request, res: Response, next: NextFunction) {
     const tenantId = req.params.id;
     if (isNaN(Number(tenantId))) {
       next(createHttpError(400, "Invalid url param."));
@@ -67,6 +68,37 @@ export class TenantController {
       res.json({
         message: "Tenant deleted successfully",
       });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async update(
+    req: CreateTenantRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    const result = validationResult(req);
+    if (!result.isEmpty()) {
+      res.status(400).json({ errors: result.array() });
+      return;
+    }
+
+    const tenantId = req.params.id;
+    const { name, address } = req.body;
+
+    if (isNaN(Number(tenantId))) {
+      next(createHttpError(400, "Invalid url param."));
+      return;
+    }
+
+    try {
+      await this.tenantService.update(Number(tenantId), { name, address });
+
+      this.logger.info("Tenant has been updated", { id: tenantId });
+
+      res.json({ id: Number(tenantId) });
+      return;
     } catch (err) {
       next(err);
     }
