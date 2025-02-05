@@ -7,11 +7,12 @@ import { UserService } from "../services/UserService";
 import { AppDataSource } from "../config/data-source";
 import { User } from "../entity/User";
 import { CreateUserRequest } from "../types";
+import logger from "../config/logger";
 
 const router = express.Router();
 const userRepository = AppDataSource.getRepository(User);
 const userService = new UserService(userRepository);
-const userController = new UserController(userService)
+const userController = new UserController(userService,logger)
 
 router.post(
   "/",
@@ -20,5 +21,21 @@ router.post(
   (req: Request, res: Response, next: NextFunction) =>
     userController.create(req as CreateUserRequest, res, next)
 );
+
+router.get(
+  "/",
+  validateRefreshToken,
+  canAccess([Roles.ADMIN]),
+  (req:Request,res:Response,next:NextFunction) => 
+    userController.getAll(req,res,next)
+)
+
+router.get(
+  "/:id",
+  validateRefreshToken,
+  canAccess([Roles.ADMIN]),
+  (req:Request,res:Response,next:NextFunction) => 
+    userController.getOne(req,res,next)
+)
 
 export default router;
