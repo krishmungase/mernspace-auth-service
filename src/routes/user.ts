@@ -38,4 +38,10 @@ router.get(
     userController.getOne(req,res,next)
 )
 
+router.delete(
+  "/:id",
+  validateRefreshToken,
+  canAccess([Roles.ADMIN]),
+  (req, res, next) => userController.destroy(req, res, next),
+);
 export default router;
