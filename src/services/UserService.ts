@@ -7,7 +7,7 @@ import bcrypt from "bcrypt";
 export class UserService {
   constructor(private userRepository: Repository<User>) {}
 
-  async create({ firstName, lastName, email, password, role }: UserData) {
+  async create({ firstName, lastName, email, password, role,tenantId }: UserData) {
     const user = await this.userRepository.findOne({ where: { email: email } });
 
     if (user) {
@@ -26,6 +26,7 @@ export class UserService {
         email,
         password: hashedPassword,
         role,
+        tenantId: tenantId ? {id: tenantId} : undefined
       });
     } catch (err) {
       const error = createHttpError(500, "Failed to store data in database");
@@ -41,11 +42,12 @@ export class UserService {
     });
   }
 
-  async findByEmail(email: string) {
+  async findByEmailWithPassword(email: string) {
     return await this.userRepository.findOne({
       where: {
         email,
       },
+      select: ["id", "email", "firstName", "lastName", "role", "password"],
     });
   }
 
