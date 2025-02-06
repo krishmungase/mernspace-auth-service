@@ -6,6 +6,7 @@
     "dev": "cross-env NODE_ENV=dev nodemon src/server.ts",
     "test": "jest --watch --runInBand",
     "start": "ts-node src/index.ts",
+    "build" : "tsc",
     "migration:generate": "typeorm-ts-node-esm migration:generate",
     "migration:run": "typeorm-ts-node-esm migration:run",
     "migration:create": "typeorm-ts-node-esm migration:create"

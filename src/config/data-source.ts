@@ -13,7 +13,7 @@ export const AppDataSource = new DataSource({
   // Don't use in the Production ⚠️ !!!
   synchronize: false,
   logging: false,
-  entities: ["src/entity/*ts"],
-  migrations: ["src/migration/*.ts"],
+  entities: ["src/entity/*{ts,js}"],
+  migrations: ["src/migration/*.{ts,js}"],
   subscribers: [],
 });
