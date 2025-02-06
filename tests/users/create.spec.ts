@@ -5,6 +5,8 @@ import { DataSource } from "typeorm";
 import { AppDataSource } from "../../src/config/data-source";
 import createJWKSMock from "mock-jwks";
 import { Roles } from "../../src/constants";
+import { Tenant } from "../../src/entity/Tenant";
+import { createTenant } from "../../src/utils";
 
 describe("POST /users", () => {
   let connection: DataSource;
@@ -37,6 +39,8 @@ describe("POST /users", () => {
 
   describe("Given all fields", () => {
     it("should persist the user in database", async () => {
+
+      const tenant = await createTenant(connection.getRepository(Tenant));
       const adminToken = jwks.token({
         sub: "1",
         role: Roles.ADMIN,
@@ -47,7 +51,8 @@ describe("POST /users", () => {
         lastName: "Mungase",
         email: "example@gmail.com",
         password: "Mungase1234",
-        tenantId: 1,
+        role: Roles.MANAGER,
+        tenantId: tenant.id,
       };
 
       // Add token to cookie
