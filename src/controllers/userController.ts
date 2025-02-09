@@ -6,7 +6,7 @@ import { Logger } from "winston";
 import { validationResult } from "express-validator";
 
 export class UserController {
-  constructor(private userService: UserService, private logger: Logger) {}
+  constructor(private readonly userService: UserService, private readonly logger: Logger) {}
   async create(req: CreateUserRequest, res: Response, next: NextFunction) {
     try {
       const { firstName, lastName, email, password, tenantId, role } = req.body;

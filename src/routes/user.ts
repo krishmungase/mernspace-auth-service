@@ -1,4 +1,4 @@
-import express, { NextFunction, Request, Response } from "express";
+import express, { NextFunction, Response } from "express";
 import { canAccess } from "../middlewares/canAccess";
 import { Roles } from "../constants";
 import validateRefreshToken from "../middlewares/validateRefreshToken";
