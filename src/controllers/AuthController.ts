@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Response } from "express";
 import { AuthRequest, RegisterUserRequest } from "../types";
 import { UserService } from "../services/UserService";
 import { Logger } from "winston";
@@ -11,10 +11,10 @@ import { Roles } from "../constants";
 
 export class AuthController {
   constructor(
-    private userService: UserService,
-    private logger: Logger,
-    private tokenService: TokenService,
-    private credientialService: CredientialService
+    private readonly userService: UserService,
+    private readonly  logger: Logger,
+    private readonly tokenService: TokenService,
+    private readonly credientialService: CredientialService
   ) {}
 
   async register(req: RegisterUserRequest, res: Response, next: NextFunction) {
